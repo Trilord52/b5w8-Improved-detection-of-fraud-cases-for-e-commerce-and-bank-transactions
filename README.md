@@ -23,11 +23,15 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - [Project Structure](#project-structure)
 - [Setup & Reproducibility](#setup--reproducibility)
 - [Workflow & Deliverables](#workflow--deliverables)
+- [Feature Engineering Rationale](#feature-engineering-rationale)
+- [Model Selection Strategy](#model-selection-strategy)
+- [Handling Class Imbalance](#handling-class-imbalance)
 - [EDA & Feature Engineering Insights](#eda--feature-engineering-insights)
 - [Class Imbalance Strategy](#class-imbalance-strategy)
 - [Processed Data](#processed-data)
 - [Running in Google Colab](#running-in-google-colab)
 - [Business Context & Rubric Alignment](#business-context--rubric-alignment)
+- [Documentation and Collaboration](#documentation-and-collaboration)
 - [References](#references)
 - [Contributing, Author, License](#contributing-author-license)
 
@@ -79,6 +83,33 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - **Documentation:**
   - All steps are explained in markdown cells, with clear summaries and business context
 
+## Feature Engineering Rationale
+Each feature was engineered based on domain knowledge, EDA findings, and the goal of improving the model's ability to detect subtle fraud patterns:
+
+- **hour_of_day:** Captures the hour of transaction; fraud may occur at unusual times (e.g., late at night).
+- **day_of_week:** Certain days may see more fraud due to business cycles or attacker behavior.
+- **time_since_signup:** Measures how quickly a user transacts after signup; fraudsters often act quickly to avoid detection.
+- **transaction_count:** Total transactions per user; helps distinguish between normal and abnormal user behavior.
+- **transactions_last_24h:** Captures transaction velocity; sudden spikes can indicate fraud.
+
+Each feature is not only technically relevant but also directly tied to business hypotheses about how fraudsters behave differently from legitimate users.
+
+## Model Selection Strategy
+For the modeling phase, both interpretability and predictive power are prioritized:
+
+- **Logistic Regression:** Used as a baseline for its interpretability and ability to provide clear insights into feature importance. It is well-suited for imbalanced classification when combined with class weighting or resampling.
+- **Ensemble Model (Random Forest or Gradient Boosting):** Chosen for their ability to capture complex, non-linear relationships and handle feature interactions, which are common in fraud detection. These models are robust to outliers and can provide feature importance rankings.
+
+Model evaluation will focus on metrics appropriate for imbalanced data, such as F1-score and AUC-PR. The choice of models aligns with the business need for both explainability (to build trust with stakeholders) and high predictive performance (to minimize financial losses).
+
+## Handling Class Imbalance
+Class imbalance is a significant challenge in fraud detection. To address this, SMOTE (Synthetic Minority Over-sampling Technique) is applied to the training data:
+
+- **Before SMOTE:** The dataset is highly imbalanced, with very few fraud cases compared to legitimate transactions.
+- **After SMOTE:** The training set is balanced, allowing the model to better learn fraud patterns and generalize to new, unseen cases.
+
+SMOTE was chosen because it creates synthetic samples of the minority class, leading to a more informative training set and improved model generalization. The effectiveness of SMOTE will be evaluated using appropriate metrics for imbalanced data, such as F1-score and AUC-PR.
+
 ## EDA & Feature Engineering Insights
 - **Fraud Patterns:**
   - The dataset is highly imbalanced, with fraudulent transactions representing a small fraction of the total
@@ -107,6 +138,7 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - Geolocation analysis (IP to country mapping)
 - Handling class imbalance using SMOTE (requires `imbalanced-learn`)
 - Well-documented notebook with markdown explanations and conclusions
+- These files are ready for use in model training and evaluation in subsequent tasks
 
 ## Running in Google Colab
 - Mount your Google Drive and adjust data paths as needed
@@ -116,6 +148,12 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - The project is structured to meet business needs for fraud detection, with a focus on actionable insights, explainability, and reproducibility
 - All documentation and code are aligned with the grading rubric and KAIM instructions for the interim submission
 - Each deliverable is mapped to rubric criteria for maximum clarity and transparency
+
+## Documentation and Collaboration
+- All code is thoroughly commented and explained, especially in the feature engineering and class imbalance sections.
+- The notebook and this README provide clear guidance for reviewers and collaborators.
+- For further details, see the Jupyter notebook (`notebooks/01_task1_data_cleaning_eda.ipynb`).
+- Contributions are welcome; please fork the repo and submit a pull request.
 
 ## References
 - [Pandas Documentation](https://pandas.pydata.org/)
