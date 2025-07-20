@@ -1,1 +1,10 @@
 instructions/
+# .gitignore
+__pycache__/
+*.pyc
+.env
+*.env
+*.sqlite3
+.DS_Store
+venv/
+.env/
