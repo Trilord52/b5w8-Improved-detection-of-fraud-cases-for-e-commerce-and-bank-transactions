@@ -4,6 +4,10 @@ matplotlib
 seaborn
 scikit-learn
 imbalanced-learn
+shap
+joblib
+xgboost
+lightgbm
 jupyter
 # Optional: for Google Colab users
 google.colab 

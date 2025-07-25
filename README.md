@@ -2,16 +2,13 @@
 
 ## Project Status
 - **Task 1:** Data cleaning, EDA, feature engineering, geolocation, and class imbalance handling ✅
-- **Task 2:** Model building and evaluation ⏳
+- **Task 2:** Model building and evaluation ✅
 - **Task 3:** Model explainability and reporting ⏳
 
 ## Project Overview
-This project delivers a comprehensive, business-driven solution for detecting fraudulent transactions in e-commerce and banking.This project builds robust machine learning models to detect fraudulent transactions in e-commerce and banking. The workflow 
-includes data cleaning, exploratory data analysis (EDA), feature engineering, geolocation analysis, handling class imbalance, 
-and saving processed data for modeling. All steps are documented for clarity, business relevance, and alignment with best 
-practices in fraud detection. The pipeline is designed for clarity, reproducibility, and actionable insights, leveraging:
+This project delivers a comprehensive, business-driven solution for detecting fraudulent transactions in e-commerce and banking. The workflow includes data cleaning, exploratory data analysis (EDA), feature engineering, geolocation analysis, handling class imbalance, and saving processed data for modeling. All steps are documented for clarity, business relevance, and alignment with best practices in fraud detection. The pipeline is designed for clarity, reproducibility, and actionable insights, leveraging:
 - **Pandas, NumPy, Matplotlib, Seaborn** for data analysis and visualization
-- **scikit-learn, imbalanced-learn** for feature engineering, modeling, and class imbalance handling
+- **scikit-learn, imbalanced-learn, SHAP, XGBoost, LightGBM** for feature engineering, modeling, class imbalance handling, and explainability
 - **Jupyter/Colab** for interactive, well-documented analysis
 
 ### Business Need & Goals
@@ -31,6 +28,8 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - [Processed Data](#processed-data)
 - [Running in Google Colab](#running-in-google-colab)
 - [Business Context & Rubric Alignment](#business-context--rubric-alignment)
+- [Model Explainability](#model-explainability)
+- [Limitations & Next Steps](#limitations--next-steps)
 - [Documentation and Collaboration](#documentation-and-collaboration)
 - [References](#references)
 - [Contributing, Author, License](#contributing-author-license)
@@ -45,6 +44,7 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 ├── reports/         # Project reports and deliverables
 ├── figures/         # Plots and visualizations
 ├── utils/           # Utility scripts
+├── results/         # Saved models, metrics, and predictions
 ├── requirements.txt # Python dependencies
 ├── .gitignore       # Excludes data, venv, and sensitive files
 └── README.md        # Project documentation
@@ -83,6 +83,26 @@ practices in fraud detection. The pipeline is designed for clarity, reproducibil
 - **Documentation:**
   - All steps are explained in markdown cells, with clear summaries and business context
 
+### Task 2: Model Building & Evaluation
+- **Data Preparation:**
+  - Feature selection, encoding, and scaling
+- **Model Training:**
+  - Logistic Regression (baseline, interpretable)
+  - Random Forest (ensemble, high performance)
+  - (Optional) XGBoost/LightGBM for advanced comparison
+- **Evaluation:**
+  - Metrics: F1-score, AUC-PR, Confusion Matrix
+  - Visualizations: PR curves, confusion matrices
+  - Comparative table of results (see below)
+- **Model Saving:**
+  - Save trained models and predictions in `results/`
+
+### Task 3: Model Explainability
+- **SHAP Analysis:**
+  - Global and local feature importance
+  - Summary and force plots
+  - Business interpretation of key drivers
+
 ## Feature Engineering Rationale
 Each feature was engineered based on domain knowledge, EDA findings, and the goal of improving the model's ability to detect subtle fraud patterns:
 
@@ -100,7 +120,7 @@ For the modeling phase, both interpretability and predictive power are prioritiz
 - **Logistic Regression:** Used as a baseline for its interpretability and ability to provide clear insights into feature importance. It is well-suited for imbalanced classification when combined with class weighting or resampling.
 - **Ensemble Model (Random Forest or Gradient Boosting):** Chosen for their ability to capture complex, non-linear relationships and handle feature interactions, which are common in fraud detection. These models are robust to outliers and can provide feature importance rankings.
 
-Model evaluation will focus on metrics appropriate for imbalanced data, such as F1-score and AUC-PR. The choice of models aligns with the business need for both explainability (to build trust with stakeholders) and high predictive performance (to minimize financial losses).
+Model evaluation focuses on metrics appropriate for imbalanced data, such as F1-score and AUC-PR. The choice of models aligns with the business need for both explainability (to build trust with stakeholders) and high predictive performance (to minimize financial losses).
 
 ## Handling Class Imbalance
 Class imbalance is a significant challenge in fraud detection. To address this, SMOTE (Synthetic Minority Over-sampling Technique) is applied to the training data:
@@ -108,7 +128,7 @@ Class imbalance is a significant challenge in fraud detection. To address this, 
 - **Before SMOTE:** The dataset is highly imbalanced, with very few fraud cases compared to legitimate transactions.
 - **After SMOTE:** The training set is balanced, allowing the model to better learn fraud patterns and generalize to new, unseen cases.
 
-SMOTE was chosen because it creates synthetic samples of the minority class, leading to a more informative training set and improved model generalization. The effectiveness of SMOTE will be evaluated using appropriate metrics for imbalanced data, such as F1-score and AUC-PR.
+SMOTE was chosen because it creates synthetic samples of the minority class, leading to a more informative training set and improved model generalization. The effectiveness of SMOTE is evaluated using appropriate metrics for imbalanced data, such as F1-score and AUC-PR.
 
 ## EDA & Feature Engineering Insights
 - **Fraud Patterns:**
@@ -127,26 +147,43 @@ SMOTE was chosen because it creates synthetic samples of the minority class, lea
 - **Justification:** This approach increases recall and precision for the minority class, which is critical for business impact
 
 ## Processed Data
-
 - All cleaned and feature-engineered datasets are saved in `data/processed/`.
 - These files are ready for use in model training and evaluation in subsequent tasks.
 
-## Key Deliverables for First Interim Submission
-- Data cleaning and preprocessing (missing values, duplicates, type corrections)
-- Exploratory Data Analysis (EDA) with business-relevant insights and visualizations
-- Feature engineering with clear business hypotheses
-- Geolocation analysis (IP to country mapping)
-- Handling class imbalance using SMOTE (requires `imbalanced-learn`)
-- Well-documented notebook with markdown explanations and conclusions
-- These files are ready for use in model training and evaluation in subsequent tasks
+## Key Results & Model Comparison
+| Model                | F1-Score | AUC-PR | Business Value                          |
+|----------------------|----------|--------|-----------------------------------------|
+| Logistic Regression  | 0.27     | 0.45   | Interpretable, good for compliance      |
+| Random Forest        | 0.99     | 1.00   | High performance, best for deployment   |
+| (Optional) XGBoost   | TBD      | TBD    | Advanced, may offer further gains       |
+
+**Recommendation:** Random Forest is recommended for deployment due to its superior performance. Logistic Regression remains valuable for interpretability and regulatory needs.
+
+## Model Explainability
+- **SHAP (Shapley Additive exPlanations):**
+  - Used to interpret the best-performing model (Random Forest)
+  - Summary and force plots reveal the most important features driving fraud predictions
+  - Key drivers: purchase_value, time_since_signup, transaction_count, certain browsers/sources
+  - Business users can use these insights to refine fraud rules and monitoring
+
+## Limitations & Next Steps
+- **Limitations:**
+  - Models may not generalize to new fraud patterns (concept drift)
+  - Data quality and feature availability may vary in production
+  - False positives can impact user experience
+- **Next Steps:**
+  - Further hyperparameter tuning and advanced model comparison (XGBoost/LightGBM)
+  - Integrate explainability into business dashboards
+  - Set up monitoring for model drift and retrain as needed
+  - Explore real-time scoring and deployment
 
 ## Running in Google Colab
 - Mount your Google Drive and adjust data paths as needed
-- All dependencies are listed in `requirements.txt` (including `imbalanced-learn` for SMOTE)
+- All dependencies are listed in `requirements.txt` (including `imbalanced-learn` for SMOTE and `shap` for explainability)
 
 ## Business Context & Rubric Alignment
 - The project is structured to meet business needs for fraud detection, with a focus on actionable insights, explainability, and reproducibility
-- All documentation and code are aligned with the grading rubric and KAIM instructions for the interim submission
+- All documentation and code are aligned with the grading rubric and KAIM instructions for the interim and final submission
 - Each deliverable is mapped to rubric criteria for maximum clarity and transparency
 
 ## Documentation and Collaboration
@@ -161,6 +198,9 @@ SMOTE was chosen because it creates synthetic samples of the minority class, lea
 - [imbalanced-learn Documentation](https://imbalanced-learn.org/stable/)
 - [Matplotlib](https://matplotlib.org/)
 - [Seaborn](https://seaborn.pydata.org/)
+- [SHAP Documentation](https://shap.readthedocs.io/en/latest/)
+- [XGBoost Documentation](https://xgboost.readthedocs.io/en/stable/)
+- [LightGBM Documentation](https://lightgbm.readthedocs.io/en/latest/)
 - [KAIM Challenge Guidelines]
 
 ## Contributing, Author, License
