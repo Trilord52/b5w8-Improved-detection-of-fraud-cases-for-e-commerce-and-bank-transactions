@@ -3,7 +3,7 @@
 ## Project Status
 - **Task 1:** Data cleaning, EDA, feature engineering, geolocation, and class imbalance handling ✅
 - **Task 2:** Model building and evaluation ✅
-- **Task 3:** Model explainability and reporting ⏳
+- **Task 3:** Model explainability with SHAP analysis ✅
 
 ## Project Overview
 This project delivers a comprehensive, business-driven solution for detecting fraudulent transactions in e-commerce and banking. The workflow includes data cleaning, exploratory data analysis (EDA), feature engineering, geolocation analysis, handling class imbalance, and saving processed data for modeling. All steps are documented for clarity, business relevance, and alignment with best practices in fraud detection. The pipeline is designed for clarity, reproducibility, and actionable insights, leveraging:
@@ -97,7 +97,22 @@ This project delivers a comprehensive, business-driven solution for detecting fr
 - **Model Saving:**
   - Save trained models and predictions in `results/`
 
-### Task 3: Model Explainability
+### Task 3: Model Explainability with SHAP
+- **SHAP Analysis:**
+  - Use SHAP (Shapley Additive exPlanations) for model interpretability
+  - Generate summary plots, force plots, and dependence plots
+  - Analyze global and local feature importance
+- **Data Sampling:**
+  - Use 15% of the original datasets for faster SHAP computation
+  - Maintain class balance in the sample for representative analysis
+- **Business Insights:**
+  - Interpret SHAP plots to understand key fraud drivers
+  - Provide actionable recommendations based on feature importance
+  - Compare insights between e-commerce and credit card fraud models
+- **Deliverables:**
+  - SHAP visualizations saved in `figures/`
+  - Feature importance rankings and analysis results
+  - Business insights and recommendations report
 - **SHAP Analysis:**
   - Global and local feature importance
   - Summary and force plots
@@ -161,10 +176,15 @@ SMOTE was chosen because it creates synthetic samples of the minority class, lea
 
 ## Model Explainability
 - **SHAP (Shapley Additive exPlanations):**
-  - Used to interpret the best-performing model (Random Forest)
-  - Summary and force plots reveal the most important features driving fraud predictions
-  - Key drivers: purchase_value, time_since_signup, transaction_count, certain browsers/sources
-  - Business users can use these insights to refine fraud rules and monitoring
+  - Used to interpret the best-performing models (Random Forest for both datasets)
+  - Summary plots, force plots, and dependence plots reveal feature importance and interactions
+  - Data sampling strategy: 15% of original datasets for faster computation while maintaining representativeness
+  - Key drivers: purchase_value, time_since_signup, transaction_count, geographic location, temporal patterns
+  - Business users can use these insights to refine fraud rules and monitoring systems
+- **Comparative Analysis:**
+  - Compare feature importance between e-commerce and credit card fraud models
+  - Identify common and unique fraud patterns across transaction types
+  - Provide actionable recommendations for each fraud detection scenario
 
 ## Limitations & Next Steps
 - **Limitations:**
