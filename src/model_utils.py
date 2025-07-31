@@ -45,20 +45,81 @@ def run_shap_analysis(model, X, feature_names, save_path=None, batch_size=1000):
     Run SHAP analysis for a tree-based model with batching for large datasets.
     Generates and saves summary plot.
     """
+    print(f"🔍 Starting SHAP analysis for {X.shape[0]} samples...")
+    
     explainer = shap.TreeExplainer(model)
     n_samples = X.shape[0]
+    
     if n_samples > batch_size:
+        print(f"📊 Processing in batches of {batch_size}...")
         shap_values = []
+        total_batches = (n_samples + batch_size - 1) // batch_size
+        
         for i in range(0, n_samples, batch_size):
+            batch_num = i // batch_size + 1
             batch = X[i:i+batch_size]
-            shap_values.append(explainer.shap_values(batch)[1])
+            print(f"   Processing batch {batch_num}/{total_batches} ({batch.shape[0]} samples)...")
+            
+            # Get SHAP values for the batch
+            batch_shap = explainer.shap_values(batch)
+            
+            # Handle different SHAP value formats
+            if isinstance(batch_shap, list):
+                # For tree-based models, SHAP returns [shap_values_class_0, shap_values_class_1]
+                batch_shap_positive = batch_shap[1]  # Extract positive class
+            elif len(batch_shap.shape) == 3:
+                # If shape is (n_samples, n_features, n_classes)
+                batch_shap_positive = batch_shap[:, :, 1]  # Extract positive class
+            else:
+                # Default case
+                batch_shap_positive = batch_shap
+            
+            shap_values.append(batch_shap_positive)
+            
+            # Show progress percentage
+            progress = (batch_num / total_batches) * 100
+            print(f"   Progress: {progress:.1f}% complete")
+        
+        print("🔗 Combining all batches...")
         shap_values = np.vstack(shap_values)
     else:
-        shap_values = explainer.shap_values(X)[1]
+        print(f"📊 Processing all {n_samples} samples at once...")
+        shap_values = explainer.shap_values(X)
+        
+        # Handle different SHAP value formats
+        if isinstance(shap_values, list):
+            # For tree-based models, SHAP returns [shap_values_class_0, shap_values_class_1]
+            shap_values = shap_values[1]  # Extract positive class
+        elif len(shap_values.shape) == 3:
+            # If shape is (n_samples, n_features, n_classes)
+            shap_values = shap_values[:, :, 1]  # Extract positive class
+    
+    # Ensure we have the correct shape
+    print(f"📊 SHAP values shape: {shap_values.shape}")
+    print(f"📊 X data shape: {X.shape}")
+    
+    # Verify shapes match
+    if shap_values.shape[1] != X.shape[1]:
+        print(f"⚠️  Shape mismatch! SHAP: {shap_values.shape[1]}, X: {X.shape[1]}")
+        print("🔧 Attempting to fix shape...")
+        
+        # If SHAP values have wrong shape, try to reshape
+        if len(shap_values.shape) == 3:
+            shap_values = shap_values[:, :, 1]  # Extract positive class
+        elif shap_values.shape[1] == 2:
+            # If we have (n_samples, 2), this is wrong - we need (n_samples, n_features)
+            print("❌ SHAP values have wrong shape. Cannot proceed.")
+            return None
+    
+    print("📈 Generating SHAP summary plot...")
     shap.summary_plot(shap_values, X, feature_names=feature_names, show=False)
+    
     if save_path:
         plt.savefig(f"{save_path}/shap_summary.png")
+        print(f"💾 Plot saved to {save_path}/shap_summary.png")
+    
     plt.show()
+    print("✅ SHAP analysis completed!")
     return shap_values
 
 
